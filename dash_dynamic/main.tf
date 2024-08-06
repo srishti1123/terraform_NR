@@ -2,10 +2,13 @@ resource "newrelic_one_dashboard" "dashboard_with_dynamic" {
  
   name        = var.dashboard_name
   permissions = var.permissions
-  page {
-    name = var.page_name
+   dynamic page {
+    for_each = var.pages
+    content {
+      
+      name = page.value.name
      dynamic "widget_billboard" {
-      for_each = var.billboard
+      for_each = try(page.value.billboard,{})
     content{
       title  = widget_billboard.value.title
       row    = widget_billboard.value.row
@@ -20,7 +23,7 @@ resource "newrelic_one_dashboard" "dashboard_with_dynamic" {
          }
       
   dynamic "widget_table" {
-   for_each = var.table
+   for_each = try(page.value.table,{})
     content{
       title  = widget_table.value.title
       row    = widget_table.value.row
@@ -35,7 +38,7 @@ resource "newrelic_one_dashboard" "dashboard_with_dynamic" {
   }
 
      dynamic "widget_line" {
-      for_each = var.line
+      for_each = try(page.value.line,{})
     content{
       title  = widget_line.value.title
       row    = widget_line.value.row
@@ -51,7 +54,7 @@ resource "newrelic_one_dashboard" "dashboard_with_dynamic" {
       }
 
 dynamic "widget_bar" {
-    for_each = var.bar
+    for_each = try(page.value.bar,{})
     content{
       title  = widget_bar.value.title
       row    = widget_bar.value.row
@@ -66,7 +69,7 @@ dynamic "widget_bar" {
       }
    
    dynamic "widget_markdown" {
-      for_each = var.markdown
+      for_each = try(page.value.markdown,{})
     content{
       title  = widget_markdown.value.title
       row    = widget_markdown.value.row
@@ -78,5 +81,7 @@ dynamic "widget_bar" {
    }
   }  
 }
+   }
 }
+
   
